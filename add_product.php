@@ -32,25 +32,26 @@
      $p_qty   = remove_junk($db->escape($_POST['product-quantity']));
      $p_buy   = remove_junk($db->escape($_POST['buying-price']));
      $p_sale  = remove_junk($db->escape($_POST['saleing-price']));
-     $file_Name= remove_junk($db->escape($_POST['file_name']));
-     $file_Type = remove_junk($db->escape($_POST['file_type']));
+     $image = $_FILE['image']['name'];
 
 
+   $allowed_extension =array('png','jpg','jpeg');
+     $_file_extension = pathinfo($image, PATHINFO_EXTENSION);
+     
      $date    = make_date();
      $query  = "INSERT INTO products (";
-     $query .=" name,quantity,buy_price,sale_price,categorie_id,date,file_type,file_Name";
+     $query .=" name,quantity,buy_price,sale_price,categorie_id,date,image";
      $query .=") VALUES (";
-     $query .=" '{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{ $file_type}' ,'{ $file_Name}','{$date}'";
+     $query .=" '{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{ $image}','{$date}'";
      $query .=")";
      $query .=" ON DUPLICATE KEY UPDATE name='{$p_name}'";
 
      
-
      if($db->query($query)){
        $session->msg('s',"Product added ");
+       move_uploaded_file($_FILES['image']['tmp_name'], 'uploads/products/'.$filename);
+       header('location:add_product.php');
        redirect('add_product.php', false);
-
-
       
 
      } else {
@@ -113,7 +114,7 @@
                   <span class="input-group-addon">
                    <i class="glyphicon glyphicon-th-large"></i>
                   </span>
-                  <input type="file" name="file_upload" multiple="multiple" class="btn btn-primary btn-file"/>
+                  <input type="file" name="image" multiple="multiple" class="btn btn-primary btn-file"/>
                     </span>   
                </div>
               </div>
